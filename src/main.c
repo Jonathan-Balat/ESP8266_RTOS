@@ -1,7 +1,9 @@
 #include "esp_common.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+
 #include "led.h"
+#include "user_uart.h"
 
 
 /********** MACROS **********/
@@ -136,6 +138,7 @@ void task_wifi_connect(void* ignore)
     vTaskDelete(NULL); // Delete the task after it has run once
 }
 
+
 /******************************************************************************
  * FunctionName : user_init
  * Description  : entry of user application, init user function here
@@ -145,6 +148,7 @@ void task_wifi_connect(void* ignore)
 void user_init(void)
 {
     /* Initialize Modules */
+    init_uart();
     init_gpio();
     init_wifi();
 
