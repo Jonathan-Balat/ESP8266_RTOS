@@ -12,7 +12,8 @@
 			"esp_common.h": "c",
 			"gpio.h": "c",
 			"esp8266.h": "c",
-			"esp_system.h": "c"
+			"esp_system.h": "c",
+			"uart.h": "c"
 		}
 	}
 }
