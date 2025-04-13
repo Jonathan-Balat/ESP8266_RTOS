@@ -1,8 +1,9 @@
-#ifndef __LED_H__
-#define __LED_H__
+#ifndef __USER_LED_H__
+#define __USER_LED_H__
 
 #include "esp_common.h"
 #include "gpio.h"
+#include "user_common.h"
 
 /********** Macros **********/
 #define GPIO_OUTPUT_SET_INV(gpio_num, bit_val)  (GPIO_OUTPUT_SET(gpio_num, (!bit_val))) /* Inverted the use of GPIO_OUTPUT_SET due to LED appearing LOW when trying to set as HIGH */
@@ -18,14 +19,8 @@ typedef enum
     LED_ON = 1
 } led_state_t;
 
-typedef enum
-{
-  LED_NORMAL = 0,
-  LED_ERROR
-} led_status_t;
-
 /********** Prototypes **********/
-void init_gpio(void);
+void init_led(void);
 void blink(uint16_t t_high, uint16_t t_low);
 
-#endif /* __LED_H__ */
+#endif /* __USER_LED_H__ */

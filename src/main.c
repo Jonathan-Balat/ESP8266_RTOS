@@ -2,21 +2,15 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "led.h"
+#include "user_led.h"
 #include "user_uart.h"
+#include "user_wifi.h"
 
 
 /********** MACROS **********/
-#ifndef WIFI_SSID
-#define WIFI_SSID "DefaultSSID"
-#endif
-
-#ifndef WIFI_PASS
-#define WIFI_PASS "DefaultPassword"
-#endif
 
 /********** GLOBALS **********/
-led_status_t gStatus = LED_ERROR;
+app_status_t gStatus = STAT_ERROR;
 
 /******************************************************************************
  * FunctionName : user_rf_cal_sector_set
@@ -74,52 +68,11 @@ void task_blink(void* ignore)
     vTaskDelete(NULL);
 }
 
-/* Wi-Fi Event Handler */
-void wifi_event_handler(System_Event_t* event)
-{
-    switch (event->event_id)
-    {
-        case EVENT_STAMODE_CONNECTED:
-            printf("Wi-Fi Connected to SSID: %s\n", event->event_info.connected.ssid);
-            gStatus = LED_NORMAL; // Update LED to indicate normal operation
-            break;
-
-        case EVENT_STAMODE_DISCONNECTED:
-            printf("Wi-Fi Disconnected. Reason: %d\n", event->event_info.disconnected.reason);
-            gStatus = LED_ERROR; // Update LED to indicate an error
-            break;
-
-        case EVENT_STAMODE_GOT_IP:
-            printf("IP Address Acquired: " IPSTR "\n", IP2STR(&event->event_info.got_ip.ip));
-            gStatus = LED_NORMAL; // Update LED to indicate normal operation
-            break;
-
-        default:
-            printf("Unhandled Wi-Fi Event: %d\n", event->event_id);
-            break;
-    }
-}
-
-void init_wifi(void)
-{
-    /* Set Wi-Fi mode to Station */
-    wifi_set_opmode(STATION_MODE);
-
-    /* Configure Wi-Fi connection */
-    struct station_config stationConf;
-    memset(&stationConf, 0, sizeof(stationConf));
-    strcpy((char*)stationConf.ssid, WIFI_SSID);
-    strcpy((char*)stationConf.password, WIFI_PASS);
-
-    /* Set the station configuration */
-    wifi_station_set_config(&stationConf);
-
-    /* Register Wi-Fi event handler */
-    wifi_set_event_handler_cb(wifi_event_handler);
-}
 
 void task_wifi_connect(void* ignore)
 {
+    printf("Running Wifi Connect Task...\n");
+
     /* Connect to the Wi-Fi network */
     wifi_station_connect();
 
@@ -132,9 +85,6 @@ void task_wifi_connect(void* ignore)
 
     printf("Connected to Wi-Fi. IP address acquired.\n");
     
-    // DEBUG
-    gStatus = LED_NORMAL; // Change LED status to normal
-
     vTaskDelete(NULL); // Delete the task after it has run once
 }
 
@@ -149,7 +99,7 @@ void user_init(void)
 {
     /* Initialize Modules */
     init_uart();
-    init_gpio();
+    init_led();
     init_wifi();
 
     /* Start tasks */
