@@ -22,28 +22,29 @@
  */
 void init_uart(void)
 {
-    UART_ConfigTypeDef config;
-
-    config.baud_rate = 115200;                          // Set baud rate to 115200
-    config.data_bits = UART_WordLength_8b;              // Set data bits to 8
-    config.parity = USART_Parity_None;                  // No parity
-    config.stop_bits = USART_StopBits_1;                // 1 stop bit
-    config.flow_ctrl = USART_HardwareFlowControl_None;  // No flow control
-    config.UART_RxFlowThresh = 120;                     // RX flow threshold
-    config.UART_InverseMask = UART_None_Inverse;        // No line inversion
+    UART_ConfigTypeDef config =
+    {
+        .baud_rate = USER_BAUD_RATE,
+        .data_bits = USER_DATA_BITS,
+        .parity = USER_PARITY,
+        .stop_bits = USER_STOP_BITS,
+        .flow_ctrl = USER_FLOW_CTRL,
+        .UART_RxFlowThresh = USER_RX_FLOW_THRESH,
+        .UART_InverseMask = USER_LINE_INVERSION
+    };
 
     // Apply UART configuration to UART0
-    UART_ParamConfig(UART0, &config);
+    UART_ParamConfig(USER_UART_NUM, &config);
 
     // Set UART0 as the print port
-    UART_SetPrintPort(UART0);
+    UART_SetPrintPort(USER_UART_NUM);
 
     // Optional: Clear FIFOs
-    UART_ResetFifo(UART0);
+    UART_ResetFifo(USER_UART_NUM);
 
-    UART_ClearIntrStatus(UART0, UART_INTR_ALL); // Clear all interrupt status
+    UART_ClearIntrStatus(USER_UART_NUM, UART_INTR_ALL); // Clear all interrupt status
 
-    UART_SetIntrEna(UART0, UART_INTR_RXFIFO_TOUT); // Enable RX FIFO timeout interrupt
+    UART_SetIntrEna(USER_UART_NUM, UART_INTR_RXFIFO_TOUT); // Enable RX FIFO timeout interrupt
 
     // Register a custom interrupt handler for UART RX
     UART_intr_handler_register(uart_rx_handler, NULL);
