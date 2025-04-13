@@ -61,15 +61,15 @@ void uart_rx_handler(void* arg)
     uint8_t received_char;
 
     // Read all available data from the RX FIFO
-    while (READ_PERI_REG(UART_STATUS(UART0)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S))
+    while (READ_PERI_REG(UART_STATUS(USER_UART_NUM)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S))
     {
         // TODO: Establish a proper command frame protocol for the received data
         // For now, just read the character and echo it back
-        received_char = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
+        received_char = READ_PERI_REG(UART_FIFO(USER_UART_NUM)) & 0xFF;
 
         printf("Received: %c\n", received_char);
     }
 
     // Clear the RX FIFO timeout and RX FIFO full interrupt flags
-    UART_ClearIntrStatus(UART0, UART_INTR_RXFIFO_TOUT | UART_INTR_RXFIFO_FULL);
+    UART_ClearIntrStatus(USER_UART_NUM, UART_INTR_RXFIFO_TOUT | UART_INTR_RXFIFO_FULL);
 }
