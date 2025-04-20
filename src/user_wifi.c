@@ -16,6 +16,7 @@ void copy_ip_str(uint8_t* ip_byte_arr, const char *ip_str)
 void client_sent_cb(void* arg)
 {
     printf("Client sent data\n");
+
 }
 
 void client_recv_cb(void* arg, char *pdata, unsigned short len)
@@ -33,9 +34,9 @@ void client_conn_cb(void* arg)
     printf("Client connected\n");
 
     // Send data to the server
-    const char *msg = "Hello from ESP8266 TCP Client!";
+    const char *msg = "TCP Client Init!";
     struct espconn *conn = (struct espconn *)arg;
-    espconn_sent(conn, (uint8_t *)msg, strlen(msg));
+    espconn_sent(conn, (uint8_t *)msg, strlen(msg)); /* client_sent_cb is triggered after this call */
 }
 
 void client_recon_cb(void *arg, sint8 err)
@@ -85,9 +86,13 @@ void init_client(const char *server_ip, uint16_t server_port)
     }
     else
     {
-        printf("Client initialized with IP: %s, Port: %d\n", server_ip, server_port);
+        printf("Client initialized with IP: %d.%d.%d.%d, Port: %d\n", client_cfg->proto.tcp->remote_ip[0],
+                                                                      client_cfg->proto.tcp->remote_ip[1],
+                                                                      client_cfg->proto.tcp->remote_ip[2],
+                                                                      client_cfg->proto.tcp->remote_ip[3], 
+                                                                      client_cfg->proto.tcp->remote_port);
+        printf("Local Port: %d\n", client_cfg->proto.tcp->local_port);  
     }
-
 
 #endif /* USER_CLIENT_TCP */
 
@@ -135,8 +140,9 @@ void init_client(const char *server_ip, uint16_t server_port)
         printf("Local Port: %d\n", client_cfg->proto.udp->local_port);
     }
 
+
     /* Send Initial Data */
-    const char *msg = "Client Init";
+    const char *msg = "UDP Client Init!";
     result = espconn_sendto(client_cfg, (uint8_t *)msg, strlen(msg));
 
     if (result>0)
@@ -148,7 +154,7 @@ void init_client(const char *server_ip, uint16_t server_port)
         printf("Message sent to server: %s\n", msg);
     }
 
-#endif /* USER_CLIENT_UDP */
+    #endif /* USER_CLIENT_UDP */
 }
 
 /********** WIFI FUNCTIONS **********/

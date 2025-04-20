@@ -71,8 +71,6 @@ void task_blink(void* ignore)
 
 void task_wifi_connect(void* ignore)
 {
-    bool loop_exit = false;
-    char ip_str_2[16] = {0};
     printf("Running Wifi Connect Task...\n");
 
     /* Connect to the Wi-Fi network */
