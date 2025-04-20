@@ -71,6 +71,8 @@ void task_blink(void* ignore)
 
 void task_wifi_connect(void* ignore)
 {
+    bool loop_exit = false;
+    char ip_str_2[16] = {0};
     printf("Running Wifi Connect Task...\n");
 
     /* Connect to the Wi-Fi network */
@@ -84,6 +86,9 @@ void task_wifi_connect(void* ignore)
     }
 
     printf("Connected to Wi-Fi. IP address acquired.\n");
+   
+    strcpy(ip_str_2, "192.168.1.6");
+    init_client(ip_str_2, 8000);
     
     vTaskDelete(NULL); // Delete the task after it has run once
 }

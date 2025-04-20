@@ -13,7 +13,9 @@
 			"gpio.h": "c",
 			"esp8266.h": "c",
 			"esp_system.h": "c",
-			"uart.h": "c"
+			"uart.h": "c",
+			"user_wifi.h": "c",
+			"user_common.h": "c"
 		}
 	}
 }
