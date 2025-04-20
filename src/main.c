@@ -87,8 +87,7 @@ void task_wifi_connect(void* ignore)
 
     printf("Connected to Wi-Fi. IP address acquired.\n");
    
-    strcpy(ip_str_2, "192.168.1.6");
-    init_client(ip_str_2, 8000);
+    init_client(IP_ADDR, PORT_ADDR);
     
     vTaskDelete(NULL); // Delete the task after it has run once
 }
