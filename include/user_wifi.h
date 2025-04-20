@@ -3,6 +3,7 @@
 
 #include "esp_common.h"
 #include "user_common.h"
+#include "espconn.h"
 
 
 /********** MACROS **********/
