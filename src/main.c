@@ -6,12 +6,7 @@
 #include "user_uart.h"
 #include "user_wifi.h"
 #include "user_tcp.h"
-
-
-/********** MACROS **********/
-
-/********** GLOBALS **********/
-app_status_t gStatus = STAT_ERROR;
+#include "device_status.h"
 
 /******************************************************************************
  * FunctionName : user_rf_cal_sector_set
@@ -56,13 +51,13 @@ uint32 user_rf_cal_sector_set(void)
     return rf_cal_sec;
 }
 
-
+/********** RTOS TASKS **********/
 void task_blink(void* ignore)
 {  
     do
     {   
         /* Blink LED based on status */ 
-        led_status(gStatus);
+        run_device_status();
     } while (true);
 
     /* Delete the task after it has run once */
@@ -110,6 +105,9 @@ void task_wifi_client_tcp_listener(void* ignore)
 
     vTaskDelete(NULL);
 }
+
+/********** APPLICATION CODE **********/
+
 
 /******************************************************************************
  * FunctionName : user_init

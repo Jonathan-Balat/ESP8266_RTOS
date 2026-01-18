@@ -22,17 +22,17 @@ void wifi_event_handler(System_Event_t* event)
     {
         case EVENT_STAMODE_CONNECTED:
             printf("Wi-Fi Connected to SSID: %s\n", event->event_info.connected.ssid);
-            gStatus = STAT_NORMAL_CONN; 
+            set_device_status(STAT_NORMAL_CONN);
             break;
 
         case EVENT_STAMODE_DISCONNECTED:
             printf("Wi-Fi Disconnected. Reason: %d\n", event->event_info.disconnected.reason);
-            gStatus = STAT_NORMAL_DISC; 
+            set_device_status(STAT_NORMAL_DISC);
             break;
 
         case EVENT_STAMODE_GOT_IP:
             printf("IP Address Acquired: " IPSTR "\n", IP2STR(&event->event_info.got_ip.ip));
-            gStatus = STAT_NORMAL_CONN; 
+            set_device_status(STAT_NORMAL_CONN);
             break;
 
         case EVENT_SOFTAPMODE_STACONNECTED:
@@ -51,7 +51,7 @@ void wifi_event_handler(System_Event_t* event)
 
         default:
             printf("Unhandled Wi-Fi Event: %d\n", event->event_id);
-            gStatus = STAT_ERROR; 
+            set_device_status(STAT_ERROR);
             break;
     }
 }

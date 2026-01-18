@@ -4,6 +4,7 @@
 #include "esp_common.h"
 #include "user_common.h"
 #include "espconn.h"
+#include "device_status.h"
 
 
 
