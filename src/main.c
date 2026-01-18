@@ -5,6 +5,7 @@
 #include "user_led.h"
 #include "user_uart.h"
 #include "user_wifi.h"
+#include "user_tcp.h"
 
 
 /********** MACROS **********/
@@ -84,8 +85,6 @@ void task_wifi_connect(void* ignore)
     }
 
     printf("Connected to Wi-Fi. IP address acquired.\n");
-   
-    init_client(IP_ADDR, PORT_ADDR);
     
     vTaskDelete(NULL); // Delete the task after it has run once
 }
@@ -97,81 +96,11 @@ void task_wifi_host_server(void* ignore)
     vTaskDelete(NULL); // Delete the task after it has run once
 }
 
-
-/* --- TCP listener callbacks --- */
-static void server_sent_cb(void *arg)
-{
-    struct espconn *conn = (struct espconn *)arg;
-    printf("Server: data sent (conn=%p)\n", conn);
-}
-
-static void server_recv_cb(void *arg, char *pdata, unsigned short len)
-{
-    struct espconn *conn = (struct espconn *)arg;
-    printf("Server: received %d bytes: %s\n", len, pdata);
-
-    /* Echo back the data */
-    if (pdata && len > 0) {
-        espconn_sent(conn, (uint8_t *)pdata, len);
-    }
-}
-
-static void server_discon_cb(void *arg)
-{
-    struct espconn *conn = (struct espconn *)arg;
-    printf("Server: client disconnected (conn=%p)\n", conn);
-}
-
-static void server_accept_cb(void *arg)
-{
-    struct espconn *client = (struct espconn *)arg;
-    printf("Server: client connected (conn=%p)\n", client);
-
-    /* Register per-connection callbacks */
-    espconn_regist_recvcb(client, server_recv_cb);
-    espconn_regist_sentcb(client, server_sent_cb);
-    espconn_regist_disconcb(client, server_discon_cb);
-}
-
 void task_wifi_client_tcp_listener(void* ignore)
 {
     printf("Running Wifi Client TCP Listener Task...\n");
 
-    const uint16_t LISTEN_PORT = 3333; /* choose a free local port */
-
-    struct espconn *server = (struct espconn *)os_zalloc(sizeof(struct espconn));
-    if (!server) {
-        printf("Server: allocation failed\n");
-        vTaskDelete(NULL);
-        return;
-    }
-
-    server->type = ESPCONN_TCP;
-    server->state = ESPCONN_NONE;
-    server->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
-    if (!server->proto.tcp) {
-        printf("Server: tcp proto allocation failed\n");
-        os_free(server);
-        vTaskDelete(NULL);
-        return;
-    }
-
-    server->proto.tcp->local_port = LISTEN_PORT;
-
-    /* register accept (connect) callback for incoming clients */
-    espconn_regist_connectcb(server, server_accept_cb);
-
-    /* start listening */
-    sint8 res = espconn_accept(server);
-    if (res != ESPCONN_OK) {
-        printf("Server: espconn_accept failed: %d\n", res);
-        if (server->proto.tcp) os_free(server->proto.tcp);
-        os_free(server);
-        vTaskDelete(NULL);
-        return;
-    }
-
-    printf("Server listening on port %d\n", LISTEN_PORT);
+    init_tcp_client();
 
     /* Keep the task alive while server runs; delete when Wi-Fi goes down or forever */
     while (true)
