@@ -210,6 +210,7 @@ void init_wifi_host(void)
     struct softap_config softapConf;
     memset(&softapConf, 0, sizeof(softapConf));
     softapConf.authmode = AUTH_WPA2_PSK;
+    softapConf.max_connection = 3; // NOTE: Unsure why claims to be full when not set explicitly.
     softapConf.ssid_hidden = 1;
     strcpy((char*)softapConf.ssid, HOST_SSID);
     strcpy((char*)softapConf.password, HOST_PASS);
