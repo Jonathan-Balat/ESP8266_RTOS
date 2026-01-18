@@ -98,6 +98,90 @@ void task_wifi_host_server(void* ignore)
 }
 
 
+/* --- TCP listener callbacks --- */
+static void server_sent_cb(void *arg)
+{
+    struct espconn *conn = (struct espconn *)arg;
+    printf("Server: data sent (conn=%p)\n", conn);
+}
+
+static void server_recv_cb(void *arg, char *pdata, unsigned short len)
+{
+    struct espconn *conn = (struct espconn *)arg;
+    printf("Server: received %d bytes: %s\n", len, pdata);
+
+    /* Echo back the data */
+    if (pdata && len > 0) {
+        espconn_sent(conn, (uint8_t *)pdata, len);
+    }
+}
+
+static void server_discon_cb(void *arg)
+{
+    struct espconn *conn = (struct espconn *)arg;
+    printf("Server: client disconnected (conn=%p)\n", conn);
+}
+
+static void server_accept_cb(void *arg)
+{
+    struct espconn *client = (struct espconn *)arg;
+    printf("Server: client connected (conn=%p)\n", client);
+
+    /* Register per-connection callbacks */
+    espconn_regist_recvcb(client, server_recv_cb);
+    espconn_regist_sentcb(client, server_sent_cb);
+    espconn_regist_disconcb(client, server_discon_cb);
+}
+
+void task_wifi_client_tcp_listener(void* ignore)
+{
+    printf("Running Wifi Client TCP Listener Task...\n");
+
+    const uint16_t LISTEN_PORT = 3333; /* choose a free local port */
+
+    struct espconn *server = (struct espconn *)os_zalloc(sizeof(struct espconn));
+    if (!server) {
+        printf("Server: allocation failed\n");
+        vTaskDelete(NULL);
+        return;
+    }
+
+    server->type = ESPCONN_TCP;
+    server->state = ESPCONN_NONE;
+    server->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
+    if (!server->proto.tcp) {
+        printf("Server: tcp proto allocation failed\n");
+        os_free(server);
+        vTaskDelete(NULL);
+        return;
+    }
+
+    server->proto.tcp->local_port = LISTEN_PORT;
+
+    /* register accept (connect) callback for incoming clients */
+    espconn_regist_connectcb(server, server_accept_cb);
+
+    /* start listening */
+    sint8 res = espconn_accept(server);
+    if (res != ESPCONN_OK) {
+        printf("Server: espconn_accept failed: %d\n", res);
+        if (server->proto.tcp) os_free(server->proto.tcp);
+        os_free(server);
+        vTaskDelete(NULL);
+        return;
+    }
+
+    printf("Server listening on port %d\n", LISTEN_PORT);
+
+    /* Keep the task alive while server runs; delete when Wi-Fi goes down or forever */
+    while (true)
+    {
+        vTaskDelay(10000 / portTICK_RATE_MS);
+    }
+
+    vTaskDelete(NULL);
+}
+
 /******************************************************************************
  * FunctionName : user_init
  * Description  : entry of user application, init user function here
@@ -109,11 +193,12 @@ void user_init(void)
     /* Initialize Modules */
     init_uart();
     init_led();
-    init_wifi_host();
+    init_wifi();
 
     /* Start tasks */
     xTaskCreate(&task_blink, "startup", 2048, NULL, 2, NULL);
-    // xTaskCreate(&task_wifi_connect, "wifi_task", 2048, NULL, 1, NULL);
-    xTaskCreate(&task_wifi_host_server, "wifi_task", 2048, NULL, 1, NULL);
+    xTaskCreate(&task_wifi_connect, "wifi_task", 2048, NULL, 1, NULL);
+    xTaskCreate(&task_wifi_client_tcp_listener, "wifi_tcp_task", 2048, NULL, 1, NULL);
+    // xTaskCreate(&task_wifi_host_server, "wifi_task", 2048, NULL, 1, NULL);
 }
 
