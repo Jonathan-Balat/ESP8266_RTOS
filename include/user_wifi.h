@@ -6,6 +6,7 @@
 #include "espconn.h"
 
 
+
 /********** MACROS **********/
 #ifndef WIFI_SSID
 #define WIFI_SSID "DefaultSSID"
@@ -15,10 +16,14 @@
 #define WIFI_PASS "DefaultPassword"
 #endif
 
+#define HOST_SSID "ESPNET"
+#define HOST_PASS "Espnet_0001"
+
 /********** PROTOTYPES **********/
 
 void wifi_event_handler(System_Event_t* event);
 void init_wifi(void);
+void init_wifi_host(void);
 
 
 #endif /* __USER_WIFI_H__ */

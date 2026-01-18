@@ -90,6 +90,13 @@ void task_wifi_connect(void* ignore)
     vTaskDelete(NULL); // Delete the task after it has run once
 }
 
+void task_wifi_host_server(void* ignore)
+{
+    printf("Running Wifi Hosting Task...\n");
+
+    vTaskDelete(NULL); // Delete the task after it has run once
+}
+
 
 /******************************************************************************
  * FunctionName : user_init
@@ -102,10 +109,11 @@ void user_init(void)
     /* Initialize Modules */
     init_uart();
     init_led();
-    init_wifi();
+    init_wifi_host();
 
     /* Start tasks */
     xTaskCreate(&task_blink, "startup", 2048, NULL, 2, NULL);
-    xTaskCreate(&task_wifi_connect, "wifi_task", 2048, NULL, 1, NULL);
+    // xTaskCreate(&task_wifi_connect, "wifi_task", 2048, NULL, 1, NULL);
+    xTaskCreate(&task_wifi_host_server, "wifi_task", 2048, NULL, 1, NULL);
 }
 

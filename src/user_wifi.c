@@ -180,11 +180,45 @@ void wifi_event_handler(System_Event_t* event)
             gStatus = STAT_NORMAL_CONN; 
             break;
 
+        case EVENT_SOFTAPMODE_STACONNECTED:
+            printf("Device Connected to Network: %02x:%02x:%02x:%02x:%02x:%02x, AID= %d\n", MAC2STR(event->event_info.sta_connected.mac), event->event_info.sta_connected.aid);
+            // gStatus = STAT_NORMAL_CONN; 
+            break;
+
+        case EVENT_SOFTAPMODE_STADISCONNECTED:
+            printf("Device Disconnected from Network: %02x:%02x:%02x:%02x:%02x:%02x, AID= %d\n", MAC2STR(event->event_info.sta_connected.mac), event->event_info.sta_connected.aid);
+            // gStatus = STAT_NORMAL_CONN; 
+            break;
+
+        case EVENT_SOFTAPMODE_PROBEREQRECVED:
+            printf("Probed by %02x:%02x:%02x:%02x:%02x:%02x - %d\n", MAC2STR(event->event_info.ap_probereqrecved.mac), event->event_info.ap_probereqrecved.rssi);
+            break;
+
         default:
             printf("Unhandled Wi-Fi Event: %d\n", event->event_id);
             gStatus = STAT_ERROR; 
             break;
     }
+}
+
+void init_wifi_host(void)
+{
+    /* Set Wi-Fi mode to Station */
+    wifi_set_opmode(SOFTAP_MODE);
+
+    /* Configure Wi-Fi connection */
+    struct softap_config softapConf;
+    memset(&softapConf, 0, sizeof(softapConf));
+    softapConf.authmode = AUTH_WPA2_PSK;
+    softapConf.ssid_hidden = 1;
+    strcpy((char*)softapConf.ssid, HOST_SSID);
+    strcpy((char*)softapConf.password, HOST_PASS);
+
+    /* Set the station configuration */
+    wifi_softap_set_config(&softapConf);
+
+    /* Register Wi-Fi event handler */
+    wifi_set_event_handler_cb(wifi_event_handler);
 }
 
 void init_wifi(void)
