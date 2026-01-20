@@ -16,8 +16,6 @@ void copy_ip_str(uint8_t* ip_byte_arr, const char *ip_str)
 /* Wi-Fi Event Handler */
 void wifi_event_handler(System_Event_t* event)
 {
-    extern int gStatus; // TODO: We don't like this design approach, eliminate in the future.
-
     switch (event->event_id)
     {
         case EVENT_STAMODE_CONNECTED:
@@ -37,12 +35,12 @@ void wifi_event_handler(System_Event_t* event)
 
         case EVENT_SOFTAPMODE_STACONNECTED:
             printf("Device Connected to Network: %02x:%02x:%02x:%02x:%02x:%02x, AID= %d\n", MAC2STR(event->event_info.sta_connected.mac), event->event_info.sta_connected.aid);
-            // gStatus = STAT_NORMAL_CONN; 
+            set_device_status(STAT_NORMAL_CONN);
             break;
 
         case EVENT_SOFTAPMODE_STADISCONNECTED:
             printf("Device Disconnected from Network: %02x:%02x:%02x:%02x:%02x:%02x, AID= %d\n", MAC2STR(event->event_info.sta_connected.mac), event->event_info.sta_connected.aid);
-            // gStatus = STAT_NORMAL_CONN; 
+            set_device_status(STAT_NORMAL_DISC);
             break;
 
         case EVENT_SOFTAPMODE_PROBEREQRECVED:

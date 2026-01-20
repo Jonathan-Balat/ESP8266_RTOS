@@ -37,6 +37,7 @@ void init_tcp_client(void)
     espconn_regist_connectcb(tcp_cfg, &tcp_conn_cb);
     espconn_regist_reconcb(tcp_cfg, tcp_recon_cb);
 
+    /* Accept configuration and start listening */
     sint8 res = espconn_accept(tcp_cfg);
     if (res != ESPCONN_OK)
     {

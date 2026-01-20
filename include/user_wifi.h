@@ -17,8 +17,13 @@
 #define WIFI_PASS "DefaultPassword"
 #endif
 
-#define HOST_SSID "ESPNET"
-#define HOST_PASS "Espnet_0001"
+#ifndef HOST_SSID
+#define HOST_SSID "DefaultHostSSID"
+#endif
+
+#ifndef HOST_PASS
+#define HOST_PASS "DefaultHostPassword"
+#endif
 
 /********** PROTOTYPES **********/
 
