@@ -14,7 +14,7 @@
 
 /* USER Configuration for UART */
 #define USER_UART_NUM       (UART0)
-#define USER_BAUD_RATE      (115200)    
+#define USER_BAUD_RATE      (9600)    
 #define USER_DATA_BITS      (UART_WordLength_8b)    
 #define USER_PARITY         (USART_Parity_None) 
 #define USER_STOP_BITS      (USART_StopBits_1)  
