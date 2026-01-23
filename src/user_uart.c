@@ -1,5 +1,10 @@
 #include "user_uart.h"
 
+/* Globals */
+// ISR-safe ring buffer for received bytes
+static volatile uint8_t uart_rx_buf[128];
+static volatile uint16_t uart_rx_head = 0;
+static volatile uint16_t uart_rx_tail = 0;
 
 /**
  * @brief Initializes the UART communication interface.
@@ -58,18 +63,36 @@ void init_uart(void)
 
 void uart_rx_handler(void* arg)
 {
-    uint8_t received_char;
+    uint8_t received_char = 0;
+    uint16_t next = 0;
 
-    // Read all available data from the RX FIFO
+    // Read all available data from the RX FIFO and push into ring buffer (ISR-safe)
     while (READ_PERI_REG(UART_STATUS(USER_UART_NUM)) & (UART_RXFIFO_CNT << UART_RXFIFO_CNT_S))
     {
-        // TODO: Establish a proper command frame protocol for the received data
-        // For now, just read the character and echo it back
         received_char = READ_PERI_REG(UART_FIFO(USER_UART_NUM)) & 0xFF;
 
-        printf("Received: %c\n", received_char);
+        // Checks if index is reaching the last index, wraps around if so.
+        next = (uart_rx_head + 1) % sizeof(uart_rx_buf);
+
+        if (next != uart_rx_tail)
+        { // avoid buffer overrun (drop on full)
+            uart_rx_buf[uart_rx_head] = received_char;
+            uart_rx_head = next;
+        }
     }
 
     // Clear the RX FIFO timeout and RX FIFO full interrupt flags
     UART_ClearIntrStatus(USER_UART_NUM, UART_INTR_RXFIFO_TOUT | UART_INTR_RXFIFO_FULL);
+}
+
+void uart_process_rx(void)
+{
+    while (uart_rx_tail != uart_rx_head)
+    {
+        uint8_t ch = uart_rx_buf[uart_rx_tail];
+        uart_rx_tail = (uart_rx_tail + 1) % sizeof(uart_rx_buf);
+
+        // Safe: printf runs outside ISR and uses the UART print port
+        printf("Received: %c\n", ch);
+    }
 }

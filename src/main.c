@@ -106,6 +106,22 @@ void task_wifi_client_tcp_listener(void* ignore)
     vTaskDelete(NULL);
 }
 
+void task_uart_rx_handler(void* ignore)
+{
+    printf("Running UART RX Handler Task...\n");
+
+    while (true)
+    {
+        uart_process_rx();
+
+        /* Yield to other tasks */
+        vTaskDelay(10 / portTICK_RATE_MS);
+    }
+
+    vTaskDelete(NULL); // This line will never be reached
+}
+
+
 /********** APPLICATION CODE **********/
 
 
@@ -126,6 +142,7 @@ void user_init(void)
     xTaskCreate(&task_blink, "startup", 2048, NULL, 2, NULL);
     xTaskCreate(&task_wifi_connect, "wifi_task", 2048, NULL, 1, NULL);
     xTaskCreate(&task_wifi_client_tcp_listener, "wifi_tcp_task", 2048, NULL, 1, NULL);
+    xTaskCreate(&task_uart_rx_handler, "uart_rx_task", 2048, NULL, 2, NULL);
     // xTaskCreate(&task_wifi_host_server, "wifi_task", 2048, NULL, 1, NULL);
 }
 
