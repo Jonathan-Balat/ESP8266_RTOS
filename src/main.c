@@ -60,12 +60,11 @@ void task_blink(void* ignore)
         run_device_status();
     } while (true);
 
-    /* Delete the task after it has run once */
     vTaskDelete(NULL);
 }
 
 
-void task_wifi_connect(void* ignore)
+void task_wifi_application(void* ignore)
 {
     printf("Running Wifi Connect Task...\n");
 
@@ -73,42 +72,31 @@ void task_wifi_connect(void* ignore)
     wifi_station_connect();
 
     /* Wait for connection */
-    while (wifi_station_get_connect_status() != STATION_GOT_IP)
+    do 
     {
         printf("Connecting to Wi-Fi...\n");
-        vTaskDelay(1000 / portTICK_RATE_MS); // Delay for 1 second
-    }
+        vTaskDelay(5000 / portTICK_RATE_MS); // Delay for 5 seconds
+    } while (wifi_station_get_connect_status() != STATION_GOT_IP);
 
-    printf("Connected to Wi-Fi. IP address acquired.\n");
+    printf("Connected to Wi-Fi.\n");
     
-    vTaskDelete(NULL); // Delete the task after it has run once
-}
-
-void task_wifi_host_server(void* ignore)
-{
-    printf("Running Wifi Hosting Task...\n");
-
-    vTaskDelete(NULL); // Delete the task after it has run once
-}
-
-void task_wifi_client_tcp_listener(void* ignore)
-{
-    printf("Running Wifi Client TCP Listener Task...\n");
+    printf("Running Wifi Client TCP Listener...\n");
 
     init_tcp_client();
+    printf("TCP Listener Running.\n");
 
-    /* Keep the task alive while server runs; delete when Wi-Fi goes down or forever */
+    /* Keep the task alive while server runs; delete when Wi-Fi goes down */
     while (true)
     {
         vTaskDelay(10000 / portTICK_RATE_MS);
     }
-
+    
     vTaskDelete(NULL);
 }
 
-void task_uart_rx_handler(void* ignore)
+void task_com_handler(void* ignore)
 {
-    printf("Running UART RX Handler Task...\n");
+    printf("Running UART Comms Task...\n");   
 
     while (true)
     {
@@ -118,7 +106,7 @@ void task_uart_rx_handler(void* ignore)
         vTaskDelay(10 / portTICK_RATE_MS);
     }
 
-    vTaskDelete(NULL); // This line will never be reached
+    vTaskDelete(NULL);
 }
 
 
@@ -140,9 +128,8 @@ void user_init(void)
 
     /* Start tasks */
     xTaskCreate(&task_blink, "startup", 2048, NULL, 2, NULL);
-    xTaskCreate(&task_wifi_connect, "wifi_task", 2048, NULL, 1, NULL);
-    xTaskCreate(&task_wifi_client_tcp_listener, "wifi_tcp_task", 2048, NULL, 1, NULL);
-    xTaskCreate(&task_uart_rx_handler, "uart_rx_task", 2048, NULL, 2, NULL);
+    xTaskCreate(&task_wifi_application, "wifi_task", 2048, NULL, 1, NULL);
+    xTaskCreate(&task_com_handler, "uart_comms_task", 2048, NULL, 2, NULL);
     // xTaskCreate(&task_wifi_host_server, "wifi_task", 2048, NULL, 1, NULL);
 }
 
