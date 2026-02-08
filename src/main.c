@@ -59,8 +59,6 @@ void task_blink(void* ignore)
         /* Blink LED based on status */ 
         run_device_status();        
         taskYIELD();
-        
-        vTaskDelay(50 / portTICK_RATE_MS); // Delay for 20ms to allow other tasks LED access
     } while (true);
 
     vTaskDelete(NULL);
@@ -78,20 +76,18 @@ void task_wifi_application(void* ignore)
     do 
     {
         printf("Connecting to Wi-Fi...\n");
-        vTaskDelay(5000 / portTICK_RATE_MS); // Delay for 5 seconds
+        vTaskDelay(DELAY_MS(5000)); // Delay for 5 seconds
     } while (wifi_station_get_connect_status() != STATION_GOT_IP);
-
     printf("Connected to Wi-Fi.\n");
     
     printf("Running Wifi Client TCP Listener...\n");
-
     init_tcp_client();
     printf("TCP Listener Running.\n");
 
     /* Keep the task alive while server runs; delete when Wi-Fi goes down */
     while (true)
     {
-        vTaskDelay(10000 / portTICK_RATE_MS);
+        vTaskDelay(DELAY_MS(10000));
     }
     
     vTaskDelete(NULL);
@@ -106,7 +102,7 @@ void task_com_handler(void* ignore)
         uart_process_rx();
 
         /* Yield to other tasks */
-        vTaskDelay(10 / portTICK_RATE_MS);
+        vTaskDelay(DELAY_MS(10));
     }
 
     vTaskDelete(NULL);
