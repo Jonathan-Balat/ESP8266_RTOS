@@ -99,12 +99,12 @@ static void cmd_blink(const uint8_t *data_buffer)
     printf("Blink Command - ON: %d ms, OFF: %d ms, Repeat: %d times\n",
             on_duration, off_duration, repeat_count);
     
-    led_in_use(0x1);
+    led_claim();
     for (idx = 0; idx < repeat_count; idx++)
     {
         blink(on_duration, off_duration);
     }
-    led_yield(0x1);
+    led_yield();
     
     send_tcp_message("Blinked!\n");
 }

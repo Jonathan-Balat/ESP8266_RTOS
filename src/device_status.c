@@ -7,7 +7,8 @@ static app_status_t current_status = STAT_ERROR;
 
 void run_device_status(void)
 {
-    led_in_use(0x0);
+    led_claim();
+
     /* Time in milliseconds */
     switch (current_status)
     {
@@ -29,7 +30,7 @@ void run_device_status(void)
             break;
     }
 
-    led_yield(0x0);
+    led_yield();
 }
 
 void set_device_status(app_status_t new_status)

@@ -30,7 +30,7 @@ void init_tcp_client(void)
     }
     
     /* Configure Local Port */
-    tcp_cfg->proto.tcp->local_port = espconn_port();
+    tcp_cfg->proto.tcp->local_port = 3333; // espconn_port();
 
     /* Register Callbacks */
     // Only connect is needed to have an initial connection, the others

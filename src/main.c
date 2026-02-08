@@ -54,11 +54,13 @@ uint32 user_rf_cal_sector_set(void)
 /********** RTOS TASKS **********/
 void task_blink(void* ignore)
 {  
-    do
+    do 
     {   
         /* Blink LED based on status */ 
-        run_device_status();
-        vTaskDelay(50 / portTICK_RATE_MS); // Delay for 50ms to allow other tasks LED access
+        run_device_status();        
+        taskYIELD();
+        
+        vTaskDelay(50 / portTICK_RATE_MS); // Delay for 20ms to allow other tasks LED access
     } while (true);
 
     vTaskDelete(NULL);

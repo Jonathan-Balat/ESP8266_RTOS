@@ -1,22 +1,18 @@
 #include "user_led.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"  // This header contains semaphore definitions
 
-static volatile bool semaphore = false;
 
-void led_in_use(uint8_t val)
+static xSemaphoreHandle led_semaphore = NULL;
+
+void led_claim(void)
 {
-    // When already in use, wait.
-    while(semaphore)
-    {
-        vTaskDelay(10 / portTICK_RATE_MS); // Wait 10ms before checking again
-        taskYIELD();
-    }
-
-    semaphore = true;
+    xSemaphoreTake(led_semaphore, portMAX_DELAY);
 }
 
-void led_yield(uint8_t val)
+void led_yield(void)
 {
-    semaphore = false;
+    xSemaphoreGive(led_semaphore);
 }
 
 void init_led(void)
@@ -27,6 +23,8 @@ void init_led(void)
 
     /* Start with LED off (GPIO2 low) */
     GPIO_OUTPUT_SET_INV(LED_PIN, 0);
+
+    vSemaphoreCreateBinary(led_semaphore);
 }
 
 void blink(uint16_t t_high, uint16_t t_low)
