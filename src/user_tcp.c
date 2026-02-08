@@ -1,5 +1,6 @@
 #include "user_tcp.h"
 
+static struct espconn *tcp_cfg = NULL;
 
 void init_tcp_client(void)
 {    
@@ -47,7 +48,22 @@ void init_tcp_client(void)
         vTaskDelete(NULL);
         return;
     }
+
+    /* Store the TCP instance for later use */
+    set_tcp_instance(&tcp_cfg);
+    // TODO: Where do we call cleanup to delete stored instance?
+
     printf("TCP Client: Listening on port %d\n", tcp_cfg->proto.tcp->local_port);
+}
+
+void set_tcp_instance(struct espconn **conn)
+{
+    tcp_cfg = *conn;
+}
+
+void get_tcp_instance(struct espconn **conn)
+{
+    *conn = tcp_cfg;
 }
 
 void tcp_conn_cb(void *arg)
@@ -78,7 +94,7 @@ void tcp_recv_cb(void *arg, char *pdata, unsigned short len)
     struct espconn *conn = (struct espconn *)arg;
     printf("TCP Client: received %d bytes: %s\n", len, pdata);
 
-    /* TODO: Process data */
+    parse_data((const uint8_t *)pdata, len);
 
     /* TODO: Optional, send ACK */
 }
@@ -87,4 +103,13 @@ void tcp_sent_cb(void* arg)
 {
     struct espconn *conn = (struct espconn *)arg;
     printf("TCP Client: data sent (conn=%p)\n", conn);
+}
+
+void send_tcp_message(const char* message) {
+    struct espconn *conn;
+    get_tcp_instance(&conn);
+    
+    if (conn && conn->state == ESPCONN_CONNECT) {
+        espconn_sent(conn, (uint8*)message, strlen(message));
+    }
 }

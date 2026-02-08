@@ -1,5 +1,24 @@
 #include "user_led.h"
 
+static volatile bool semaphore = false;
+
+void led_in_use(uint8_t val)
+{
+    // When already in use, wait.
+    while(semaphore)
+    {
+        vTaskDelay(10 / portTICK_RATE_MS); // Wait 10ms before checking again
+        taskYIELD();
+    }
+
+    semaphore = true;
+}
+
+void led_yield(uint8_t val)
+{
+    semaphore = false;
+}
+
 void init_led(void)
 {
     /* Initialize GPIO2 pin as output */
@@ -12,10 +31,16 @@ void init_led(void)
 
 void blink(uint16_t t_high, uint16_t t_low)
 {
-    GPIO_OUTPUT_SET_INV(LED_PIN, LED_ON);
-    vTaskDelay(DELAY_MS(t_high));
+    if (t_high > 0)
+    {
+        GPIO_OUTPUT_SET_INV(LED_PIN, LED_ON);
+        vTaskDelay(DELAY_MS(t_high));
+    }
 
-    GPIO_OUTPUT_SET_INV(LED_PIN, LED_OFF);
-    vTaskDelay(DELAY_MS(t_low)); 
+    if (t_low > 0)
+    {
+        GPIO_OUTPUT_SET_INV(LED_PIN, LED_OFF);
+        vTaskDelay(DELAY_MS(t_low)); 
+    }
 }
 

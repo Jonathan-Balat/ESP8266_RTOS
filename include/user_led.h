@@ -21,6 +21,8 @@ typedef enum
 
 /********** Prototypes **********/
 void init_led(void);
+void led_in_use(uint8_t val);
+void led_yield(uint8_t val);
 void blink(uint16_t t_high, uint16_t t_low);
 
 #endif /* __USER_LED_H__ */

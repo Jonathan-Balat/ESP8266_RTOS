@@ -6,6 +6,8 @@
 
 /* Function Decalarations */
 void init_tcp_client(void);
+void set_tcp_instance(struct espconn **conn);
+void get_tcp_instance(struct espconn **conn);
 void tcp_conn_cb(void *arg);
 void tcp_discon_cb(void *arg);
 void tcp_recon_cb(void *arg, sint8 err);

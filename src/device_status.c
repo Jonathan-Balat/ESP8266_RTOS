@@ -1,4 +1,5 @@
 #include "device_status.h"
+#include "user_led.h"
 
 
 static app_status_t current_status = STAT_ERROR;
@@ -6,6 +7,7 @@ static app_status_t current_status = STAT_ERROR;
 
 void run_device_status(void)
 {
+    led_in_use(0x0);
     /* Time in milliseconds */
     switch (current_status)
     {
@@ -26,6 +28,8 @@ void run_device_status(void)
             /* Do nothing - Invalid case */
             break;
     }
+
+    led_yield(0x0);
 }
 
 void set_device_status(app_status_t new_status)

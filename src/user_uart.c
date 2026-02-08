@@ -94,5 +94,7 @@ void uart_process_rx(void)
 
         // Safe: printf runs outside ISR and uses the UART print port
         printf("Received: %c\n", ch);
+        
+        // TODO: Retrieve data in array of bytes for processing.
     }
 }

@@ -58,6 +58,7 @@ void task_blink(void* ignore)
     {   
         /* Blink LED based on status */ 
         run_device_status();
+        vTaskDelay(50 / portTICK_RATE_MS); // Delay for 50ms to allow other tasks LED access
     } while (true);
 
     vTaskDelete(NULL);
@@ -127,8 +128,8 @@ void user_init(void)
     init_wifi();
 
     /* Start tasks */
-    xTaskCreate(&task_blink, "startup", 2048, NULL, 2, NULL);
-    xTaskCreate(&task_wifi_application, "wifi_task", 2048, NULL, 1, NULL);
+    xTaskCreate(&task_blink, "startup", 2048, NULL, 1, NULL);
+    xTaskCreate(&task_wifi_application, "wifi_task", 2048, NULL, 2, NULL);
     xTaskCreate(&task_com_handler, "uart_comms_task", 2048, NULL, 2, NULL);
     // xTaskCreate(&task_wifi_host_server, "wifi_task", 2048, NULL, 1, NULL);
 }
