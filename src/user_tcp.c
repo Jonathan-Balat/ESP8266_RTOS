@@ -83,7 +83,6 @@ void tcp_recon_cb(void *arg, sint8 err)
     printf("TCP Client: Connection failed. Error code: %d\n", err);
 }
 
-
 void tcp_discon_cb(void *arg)
 {
     struct espconn *conn = (struct espconn *)arg;
@@ -97,6 +96,7 @@ void tcp_recv_cb(void *arg, char *pdata, unsigned short len)
     parse_data((const uint8_t *)pdata, len);
 
     /* TODO: Optional, send ACK */
+    // send_tcp_message():
 }
 
 void tcp_sent_cb(void* arg)
@@ -105,7 +105,8 @@ void tcp_sent_cb(void* arg)
     printf("TCP Client: data sent (conn=%p)\n", conn);
 }
 
-void send_tcp_message(const char* message) {
+void send_tcp_message(const char* message)
+{
     struct espconn *conn;
     get_tcp_instance(&conn);
     
