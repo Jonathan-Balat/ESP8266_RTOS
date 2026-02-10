@@ -1,14 +1,7 @@
 #ifndef __USER_COMMAND_H__
 #define __USER_COMMAND_H__
 
-#include "middleware/data_parser.h"
-
-typedef struct 
-{
-    uint8_t start_byte: 8;
-    uint8_t command_id: 8;
-    uint8_t payload[];
-}cmd_frame_t;
+#include "esp_common.h"
 
 typedef enum
 {

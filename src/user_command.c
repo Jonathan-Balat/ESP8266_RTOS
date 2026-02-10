@@ -2,8 +2,7 @@
 
 
 static uint32_t cmd_compute_sum(const uint8_t *data_buffer);
-static void cmd_blink(const uint8_t *data_buffer);
-
+static uint8_t cmd_blink(const uint8_t *data_buffer);
 
 /**
  * @brief Command Frame Structure Definition
@@ -29,15 +28,26 @@ static void cmd_blink(const uint8_t *data_buffer);
  */
 bool command_function(uint8_t cmd_id, uint8_t *cmd_data)
 {
+    uint8_t *return_data = cmd_data;
+    uint32_t sum = 0;
+
     // Process Command ID
     switch(cmd_id)
     {
-        case CMD_SUM: // Data Sum
-            cmd_compute_sum(cmd_data);
+        case CMD_SUM:
+            sum = cmd_compute_sum(cmd_data); // TODO: 4 bytes returned
+
+            cmd_data[0] = 4; // response payload length
+            cmd_data[1] = sum & 0xFF; // Return sum as 4 bytes
+            cmd_data[2] = (sum >> 8) & 0xFF;
+            cmd_data[3] = (sum >> 16) & 0xFF;
+            cmd_data[4] = (sum >> 24) & 0xFF;
+
             break;
 
-        case CMD_BLINK: // Blink Command
-            cmd_blink(cmd_data);
+        case CMD_BLINK:
+            cmd_data[1] = cmd_blink(cmd_data); // Returns 1 for success, 0 for failure
+            cmd_data[0] = 1; // response payload length
             break;
 
         default:
@@ -58,33 +68,29 @@ static uint32_t cmd_compute_sum(const uint8_t *data_buffer)
         sum += data_buffer[3 + idx];
     }
 
-    // printf("Data Sum: %d\n", sum);
     return sum;
 }
 
-static void cmd_blink(const uint8_t *data_buffer)
+static uint8_t cmd_blink(const uint8_t *data_buffer)
 {
+    uint8_t ret_val = 0; // Assume failure.
     uint8_t idx = 0;
     uint8_t payload_len = data_buffer[2];
     uint8_t on_duration = data_buffer[3];
     uint8_t off_duration = data_buffer[4];
     uint8_t repeat_count = data_buffer[5];
 
-    if (payload_len != 3)
+    if (payload_len == 3)
     {
-        printf("Invalid payload length for BLINK command: %d\n", payload_len);
-        return;
+        led_claim();
+        for (idx = 0; idx < repeat_count; idx++)
+        {
+            blink(on_duration, off_duration);
+        }
+        led_yield();
+
+        ret_val = 1; // Indicate success.
     }
 
-    printf("Blink Command - ON: %d ms, OFF: %d ms, Repeat: %d times\n",
-            on_duration, off_duration, repeat_count);
-    
-    led_claim();
-    for (idx = 0; idx < repeat_count; idx++)
-    {
-        blink(on_duration, off_duration);
-    }
-    led_yield();
-    
-    send_tcp_message("Blinked!\n");
+    return ret_val;
 }

@@ -1,10 +1,7 @@
 #include "middleware/data_parser.h"
 #include "user_led.h"
 #include "user_command.h"
-bool parse_start_byte(const uint8_t byte)
-{
-    return (byte == START_BYTE);
-}
+
 
 void parse_data(const uint8_t* data, size_t length)
 {

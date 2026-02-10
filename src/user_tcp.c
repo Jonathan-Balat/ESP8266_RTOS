@@ -56,6 +56,7 @@ void init_tcp_client(void)
     printf("TCP Client: Listening on port %d\n", tcp_cfg->proto.tcp->local_port);
 }
 
+/********** Setter/Getter Functions **********/
 void set_tcp_instance(struct espconn **conn)
 {
     tcp_cfg = *conn;
@@ -66,6 +67,18 @@ void get_tcp_instance(struct espconn **conn)
     *conn = tcp_cfg;
 }
 
+/********** API Functions **********/
+void send_tcp_message(const char* message)
+{
+    struct espconn *conn;
+    get_tcp_instance(&conn);
+    
+    if (conn && conn->state == ESPCONN_CONNECT) {
+        espconn_sent(conn, (uint8*)message, strlen(message));
+    }
+}
+
+/********** Callback Functions **********/
 void tcp_conn_cb(void *arg)
 {
     struct espconn *conn = (struct espconn *)arg;
@@ -103,14 +116,4 @@ void tcp_sent_cb(void* arg)
 {
     struct espconn *conn = (struct espconn *)arg;
     printf("TCP Client: data sent (conn=%p)\n", conn);
-}
-
-void send_tcp_message(const char* message)
-{
-    struct espconn *conn;
-    get_tcp_instance(&conn);
-    
-    if (conn && conn->state == ESPCONN_CONNECT) {
-        espconn_sent(conn, (uint8*)message, strlen(message));
-    }
 }
