@@ -5,8 +5,7 @@
 #include "user_led.h"
 #include "user_uart.h"
 #include "user_wifi.h"
-#include "user_tcp.h"
-#include "device_status.h"
+#include "application/device_status.h"
 
 /******************************************************************************
  * FunctionName : user_rf_cal_sector_set
@@ -81,7 +80,7 @@ void task_wifi_application(void* ignore)
     printf("Connected to Wi-Fi.\n");
     
     printf("Running Wifi Client TCP Listener...\n");
-    init_tcp_client();
+    init_wifi_tcp_client();
     printf("TCP Listener Running.\n");
 
     /* Keep the task alive while server runs; delete when Wi-Fi goes down */

@@ -1,4 +1,5 @@
 #include "user_wifi.h"
+#include "middleware/user_tcp.h"
 
 /********** HELPER FUNCTIONS **********/
 void copy_ip_str(uint8_t* ip_byte_arr, const char *ip_str)
@@ -91,4 +92,9 @@ void init_wifi(void)
 
     /* Register Wi-Fi event handler */
     wifi_set_event_handler_cb(wifi_event_handler);
+}
+
+void init_wifi_tcp_client(void)
+{
+    init_tcp_client();
 }

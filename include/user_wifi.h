@@ -4,7 +4,7 @@
 #include "esp_common.h"
 #include "user_common.h"
 #include "espconn.h"
-#include "device_status.h"
+#include "application/device_status.h"
 
 
 
@@ -30,6 +30,9 @@
 void wifi_event_handler(System_Event_t* event);
 void init_wifi(void);
 void init_wifi_host(void);
+
+/* TCP PROTOCOL */
+void init_wifi_tcp_client(void);
 
 
 #endif /* __USER_WIFI_H__ */

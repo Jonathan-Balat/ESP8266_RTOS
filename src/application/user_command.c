@@ -1,4 +1,4 @@
-#include "user_command.h"
+#include "application/user_command.h"
 
 
 static uint32_t cmd_compute_sum(const uint8_t *data_buffer);
