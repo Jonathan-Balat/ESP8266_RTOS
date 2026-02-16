@@ -4,6 +4,15 @@
 static uint32_t cmd_compute_sum(const uint8_t *data_buffer);
 static uint8_t cmd_blink(const uint8_t *data_buffer);
 
+// TODO: Move to common utility file.
+static void word_to_bytes(uint32_t value, uint8_t *bytes_out)
+{
+    bytes_out[0] = value & 0xFF;
+    bytes_out[1] = (value >> 8) & 0xFF;
+    bytes_out[2] = (value >> 16) & 0xFF;
+    bytes_out[3] = (value >> 24) & 0xFF;
+}
+
 /**
  * @brief Command Frame Structure Definition
  * 
@@ -35,14 +44,10 @@ bool command_function(uint8_t cmd_id, uint8_t *cmd_data)
     switch(cmd_id)
     {
         case CMD_SUM:
-            sum = cmd_compute_sum(cmd_data); // TODO: 4 bytes returned
+            sum = cmd_compute_sum(cmd_data);
 
             cmd_data[0] = 4; // response payload length
-            cmd_data[1] = sum & 0xFF; // Return sum as 4 bytes
-            cmd_data[2] = (sum >> 8) & 0xFF;
-            cmd_data[3] = (sum >> 16) & 0xFF;
-            cmd_data[4] = (sum >> 24) & 0xFF;
-
+            word_to_bytes(sum, &cmd_data[1]);
             break;
 
         case CMD_BLINK:
@@ -59,13 +64,13 @@ bool command_function(uint8_t cmd_id, uint8_t *cmd_data)
 /***** Command Functions *****/
 static uint32_t cmd_compute_sum(const uint8_t *data_buffer)
 {
-    uint8_t payload_len = data_buffer[2];
+    uint8_t payload_len = data_buffer[0];
     uint8_t idx = 0;
     uint32_t sum = 0;
 
     for (idx = 0; idx < payload_len; idx++)
     {
-        sum += data_buffer[3 + idx];
+        sum += data_buffer[1 + idx];
     }
 
     return sum;

@@ -73,7 +73,8 @@ void send_tcp_message(const char* message)
     struct espconn *conn;
     get_tcp_instance(&conn);
     
-    if (conn && conn->state == ESPCONN_CONNECT) {
+    if (conn && conn->state == ESPCONN_CONNECT)
+    {
         espconn_sent(conn, (uint8*)message, strlen(message));
     }
 }
@@ -109,7 +110,8 @@ void tcp_recv_cb(void *arg, char *pdata, unsigned short len)
     parse_data((const uint8_t *)pdata, len);
 
     /* TODO: Optional, send ACK */
-    // send_tcp_message():
+    espconn_sent(conn, pdata, 7);
+    // send_tcp_message(pdata);
 }
 
 void tcp_sent_cb(void* arg)

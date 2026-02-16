@@ -33,5 +33,6 @@ void parse_data(const uint8_t* data, size_t length)
     }
 
     command_function(cmd_frame->command_id, cmd_frame->payload);
+    
 }
 
