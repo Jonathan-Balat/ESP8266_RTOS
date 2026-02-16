@@ -1,2 +1,5 @@
 .pio
 .vscode
+.idea
+pytest/__pycache__
+pytest/common/__pycache__
