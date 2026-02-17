@@ -37,7 +37,6 @@ static void word_to_bytes(uint32_t value, uint8_t *bytes_out)
  */
 bool command_function(uint8_t cmd_id, uint8_t *cmd_data)
 {
-    uint8_t *return_data = cmd_data;
     uint32_t sum = 0;
 
     // Process Command ID
