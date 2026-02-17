@@ -80,10 +80,10 @@ static uint8_t cmd_blink(const uint8_t *data_buffer)
 {
     uint8_t ret_val = 0; // Assume failure.
     uint8_t idx = 0;
-    uint8_t payload_len = data_buffer[2];
-    uint8_t on_duration = data_buffer[3];
-    uint8_t off_duration = data_buffer[4];
-    uint8_t repeat_count = data_buffer[5];
+    uint8_t payload_len = data_buffer[0];
+    uint8_t on_duration = data_buffer[1];
+    uint8_t off_duration = data_buffer[2];
+    uint8_t repeat_count = data_buffer[3];
 
     if (payload_len == 3)
     {

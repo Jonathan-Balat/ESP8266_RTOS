@@ -20,10 +20,12 @@ def setup():
 def teardown(socket_instance):
     socket_instance.close()
 
+########## Helper functions ##########
 def send_bytes(socket_instance, data_bytes):
     socket_instance.sendall(data_bytes)
     return socket_instance.recv(1024)
 
+########## Test cases ##########
 def test_command_sum():
 
     socket_instance = setup()
@@ -39,4 +41,25 @@ def test_command_sum():
     ret_val = send_bytes(socket_instance, cmd_frame_bytes)
     data_sum = bc.from_bytearray(ret_val[3:], 4)[0]
 
+    teardown(socket_instance)
+
     assert data_sum == sum(data)
+
+def test_command_blink():
+
+    socket_instance = setup()
+
+    # Data sample
+    # CMD FORMAT: [START_BYTE, Command.BLINK.value, 3, ON_DURATION, OFF_DURATION, REPEAT_COUNT]
+    data = [0xFF, 0xFF, 5]
+    cmd_frame = [START_BYTE, Command.BLINK.value, len(data)] + data
+
+    # Convert to byte array
+    cmd_frame_bytes = bc.to_bytearray(cmd_frame)
+
+    # Send to device and receive response
+    ret_val = send_bytes(socket_instance, cmd_frame_bytes)
+
+    teardown(socket_instance)
+
+    assert ret_val[3] == 0x1
