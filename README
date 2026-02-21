@@ -1,3 +1,33 @@
+
+Getting started
 To make use of this project, simply install the following software/programs
 - Visual Studio Code
-- PlatformIO plugin
+- PlatformIO plugin (For C development)
+- Python (For pytests)
+
+Program Flow
+The main code consists of RTOS Tasks that are run to initialize peripherals. Currently, the tasks are:
+    - UART: For serial communications
+    - LED: For board status
+    - WIFI: For TCP communications.
+
+Wifi Comms format:
+The Command Frame used to communicate the following devices is as follows:
+
+    |   Label       |   ByteIndex   |            Remarks            |
+    |  StartByte    |      [0]      |  0xBD (Constant)              |
+    |  CMD_ID       |      [1]      |  0x0 - 0xFF                   |
+    | PayloadLength |      [3]      |  Varies according to CMD_DATA |
+    |  CMD_Data     |      [3:N]    |  Formats according to CMD_ID  |
+
+Minimally, the Command Frame should be size of 2 Bytes, where the first byte should be the StartByte Constant (0xBD). Otherwise, this is considered invalid and the program will reject the message received.
+
+CMD_ID:
+Commands are flexible and can be assigned from 0x0 to 0xFF. Current program shows examples of Commands implemented.
+
+CMD_ID  - 0 (Sum)
+Format: [StartByte, 0x0, PayloadLength (0 to N), N, N-1, ..., 0] computes for the total sum of the provided N-Bytes received.
+
+CMD_ID  - 1 (Blink)
+Format: [StartByte, 0x0, 0x3 (Constant), OnTime (ms), OffTime (ms), NumOfRepeats]
+Triggers the LED to blink NumOfRepeats-times with provided OnTime and OffTime.
