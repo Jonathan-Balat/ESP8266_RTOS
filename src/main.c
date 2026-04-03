@@ -5,6 +5,7 @@
 #include "user_led.h"
 #include "user_uart.h"
 #include "user_wifi.h"
+#include "user_gpio.h"
 #include "application/device_status.h"
 
 /******************************************************************************
@@ -110,7 +111,6 @@ void task_com_handler(void* ignore)
 
 /********** APPLICATION CODE **********/
 
-
 /******************************************************************************
  * FunctionName : user_init
  * Description  : entry of user application, init user function here
@@ -120,6 +120,7 @@ void task_com_handler(void* ignore)
 void user_init(void)
 {
     /* Initialize Modules */
+    gpio_init();
     init_uart();
     init_led();
     init_wifi();

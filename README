@@ -7,14 +7,15 @@ To make use of this project, simply install the following software/programs
 
 Program Flow
 The main code consists of RTOS Tasks that are run to initialize peripherals. Currently, the tasks are:
-    - UART: For serial communications
-    - LED: For board status
+    - UART: For serial communications.
+    - LED: For board status.
     - WIFI: For TCP communications.
 
 Wifi Comms format:
 The Command Frame used to communicate the following devices is as follows:
 
     |   Label       |   ByteIndex   |            Remarks            |
+    |---------------|---------------|-------------------------------|
     |  StartByte    |      [0]      |  0xBD (Constant)              |
     |  CMD_ID       |      [1]      |  0x0 - 0xFF                   |
     | PayloadLength |      [3]      |  Varies according to CMD_DATA |
