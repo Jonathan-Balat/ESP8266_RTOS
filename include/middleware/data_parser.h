@@ -3,6 +3,7 @@
 
 #include "esp_common.h"
 
+#define CMD_FRAME_MIN_SIZE (3)
 
 typedef struct 
 {
