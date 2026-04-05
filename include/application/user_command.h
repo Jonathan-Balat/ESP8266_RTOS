@@ -5,10 +5,23 @@
 
 typedef enum
 {
-    CMD_SUM = 0,
+    CMD_GPIO = 0,
+    CMD_SUM,
     CMD_BLINK,
     CMD_MAX
-} command_id_t;
+} eCommandId;
+
+typedef enum
+{
+    GPIO_CMD_CONF = 0,
+    GPIO_CMD_OUT,
+    GPIO_CMD_IN,
+    GPIO_CMD_HI,
+    GPIO_CMD_LO,
+    GPIO_CMD_INT_SET,
+    GPIO_CMD_INT_CLR,
+    GPIO_CMD_READ
+}eGpioCmd;
 
 
 #define START_BYTE (0xBD)

@@ -7,8 +7,9 @@ START_BYTE = 0xBD
 
 
 class Command(enum.Enum):
-    SUM = 0x00
-    BLINK = 0x01
+    GPIO    = 0x00
+    SUM     = 0x01
+    BLINK   = 0x02
 
 
 def setup():
@@ -26,6 +27,19 @@ def send_bytes(socket_instance, data_bytes):
     return socket_instance.recv(1024)
 
 ########## Test cases ##########
+def test_command_gpio():
+    
+    socket_instance = setup()
+
+    # CMD FORMAT: [START_BYTE, Command.GPIO.value, 3, GPIO_CMD, PIN_NUM, VALUE(see GPIO_CMD if used)]
+    data = [0x3, 0x00, 0x01, 0x00]
+    cmd_frame = [START_BYTE, Command.GPIO.value, len(data)] + data
+
+    # Convert to byte array
+    cmd_frame_bytes = bc.to_bytearray(cmd_frame)
+    
+    assert false
+
 def test_command_sum():
 
     socket_instance = setup()

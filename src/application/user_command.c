@@ -60,34 +60,14 @@ bool command_function(uint8_t cmd_id, uint8_t *cmd_data)
     }
 }
 
-typedef enum
-{
-    GPIO_CMD_CONF = 0,
-    GPIO_CMD_OUT,
-    GPIO_CMD_IN,
-    GPIO_CMD_HI,
-    GPIO_CMD_LO,
-    GPIO_CMD_INT_SET,
-    GPIO_CMD_INT_CLR,
-    GPIO_CMD_READ
-}eGpioCmd;
-
 /***** Command Functions *****/
 static uint32_t cmd_gpio_control(const uint8_t *data_buffer)
 {
     uint32_t result = 0; // Assume failure.
     uint8_t payload_len = data_buffer[0];
-    // data_buffer[1] is command
-    //  0 - Configure (TODO: Create function)
-    //  1 - Set output
-    //  2 - Set input
-    //  3 - Set High
-    //  4 - Set Low
-    //  5 - Set Interrupt (TBC) & Assigns existing handler.
-    //  6 - Clear Interrupt (TBC)
     eGpioCmd gpio_cmd = (eGpioCmd)data_buffer[1];
-    uint8_t pin_num_bitp = data_buffer[2];
-    uint8_t pin_value = data_buffer[3];
+    uint16_t pin_num_bitp = (data_buffer[3]<<8) | data_buffer[2];
+    uint8_t pin_value = data_buffer[4];
 
     if (payload_len == 3)
     {
