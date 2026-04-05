@@ -6,7 +6,6 @@
 #include "user_common.h"
 
 /********** Macros **********/
-#define GPIO_OUTPUT_SET_INV(gpio_num, bit_val)  (GPIO_OUTPUT_SET(gpio_num, (!bit_val))) /* Inverted the use of GPIO_OUTPUT_SET due to LED appearing LOW when trying to set as HIGH */
 #define LED_PIN (2) // GPIO2 is used for the LED
 
 #define DELAY_1000_MS (1000 / portTICK_RATE_MS) /* 1000 ms delay for FreeRTOS */

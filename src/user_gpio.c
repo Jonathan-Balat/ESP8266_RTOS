@@ -40,17 +40,13 @@ static gpio_pinmux_t _gpio_pinmux[GPIO_PINS_MAX] = \
  *          for flash memory interface and should not be used for general purpose I/O.
  *          Initialization is done for all relevant pins and are set 
  */
-/* 
-    All pins, except gpio 6-11 for flash, are usable.
-
-
-*/
 void gpio_init(void)
 {
     uint8_t pin_idx;
 
     for (pin_idx = 0; pin_idx < GPIO_PINS_MAX; pin_idx++)
     {
+        // Skips over the reserved GPIO pins.
         if ((5<pin_idx) && (pin_idx<12))
         {
             continue;
@@ -64,28 +60,29 @@ void gpio_init(void)
         // Clears Output to LOW, and sets as an input pin.
         gpio_output_conf(0, (1<<pin_idx), 0, (1<<pin_idx)); 
     }
-
-    /* Re-initialize GPIO12 pin as output */
-    gpio_pin_set_output((1<<12)); 
-    gpio_pin_clear((1<<12)); 
 }
 
-void gpio_pin_set_output(uint16_t pins_bitp)
+void gpio_pin_reconfigure(uint8_t pin_num, uint8_t pin_func)
+{
+    PIN_FUNC_SELECT(_gpio_pinmux[pin_num].register_base, pin_func);
+}
+
+void gpio_pin_mode_output_set(uint16_t pins_bitp)
 {
     gpio_output_conf(0, 0, pins_bitp, 0); 
 }
 
-void gpio_pin_set_input(uint16_t pins_bitp)
+void gpio_pin_mode_input_set(uint16_t pins_bitp)
 {
     gpio_output_conf(0, 0, 0, pins_bitp); 
 }
 
-void gpio_pin_set(uint16_t pins_bitp)
+void gpio_pin_value_set(uint16_t pins_bitp)
 {
     gpio_output_conf(pins_bitp, 0, 0, 0); 
 }
 
-void gpio_pin_clear(uint16_t pins_bitp)
+void gpio_pin_value_clear(uint16_t pins_bitp)
 {
     gpio_output_conf(0, pins_bitp, 0, 0); 
 }
